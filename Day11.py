@@ -1,5 +1,6 @@
 from collections import namedtuple
 import operator
+from functools import reduce
 
 Monkey = namedtuple('Monkey', ['items', 'op', 'op_value', 'divisor', 'throw_true', 'throw_false'])
 
@@ -20,14 +21,24 @@ with open('inputs/day11.txt') as f:
         throw_false = int(lines[5].split()[-1])
         monkeys.append(Monkey(starting_items, op, value, divisor, throw_true, throw_false))
 
+mod = reduce(operator.mul, (monkey.divisor for monkey in monkeys))
 inspections = [0] * len(monkeys)
 
-for round in range(20):
+# # Part 1
+# for round in range(20):
+#     for i, monkey in enumerate(monkeys):
+#         for item in monkey.items:
+#             item = monkey.op(item, monkey.op_value or item)
+#             item //= 3
+#             monkeys[monkey.throw_true if item % monkey.divisor == 0 else monkey.throw_false].items.append(item)
+#         inspections[i] += len(monkey.items)
+#         monkey.items.clear()
+
+for round in range(10000):
     for i, monkey in enumerate(monkeys):
         for item in monkey.items:
             item = monkey.op(item, monkey.op_value or item)
-            item //= 3
-            monkeys[monkey.throw_true if item % monkey.divisor == 0 else monkey.throw_false].items.append(item)
+            monkeys[monkey.throw_true if item % monkey.divisor == 0 else monkey.throw_false].items.append(item % mod)
         inspections[i] += len(monkey.items)
         monkey.items.clear()
 
