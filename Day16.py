@@ -1,4 +1,6 @@
 import re
+from itertools import combinations
+from tqdm import tqdm
 
 g = {}
 rates = {}
@@ -49,3 +51,14 @@ def visit(node, unvisited, remaining, pressure):
 
 valves = {node for (node, rate) in rates.items() if rate > 0 and node != 'AA'}
 print(visit('AA', valves, 30, 0))
+
+max_pressure = 0
+# Only need to test half as the remaining are just inverse
+for i in tqdm(range(1, len(valves)//2 + 1)):
+    for me in tqdm(combinations(valves, i)):
+        me = set(me)
+        elephant = valves - me
+        me_pressure = visit('AA', me, 26, 0)
+        elephant_pressure = visit('AA', elephant, 26, 0)
+        max_pressure = max(max_pressure, me_pressure + elephant_pressure)
+print(max_pressure)
